@@ -1,0 +1,23 @@
+services:
+  fastapi-backend:
+    build: ./fastapi-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  chainlit-ui:
+    build: ./chainlit-ui
+    ports:
+      - "8001:8000"
+    depends_on:
+      - fastapi-backend
+    env_file:
+      - .env
+    environment:
+      FASTAPI_URL: http://fastapi-backend:8000/chat
+      APPROVE_URL: http://fastapi-backend:8000/approve
+    restart: unless-stopped
